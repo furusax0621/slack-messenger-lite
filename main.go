@@ -25,16 +25,8 @@ func main() {
 		log.Printf("unknown error: %s", err.Error())
 	}
 
-	blocks := []slack.Block{
-		slack.NewSectionBlock(
-			slack.NewTextBlockObject(slack.MarkdownType, fmt.Sprintf("```%s```", content), false, false),
-			nil,
-			nil,
-		),
-	}
-
 	err = slack.PostWebhookContext(ctx, url, &slack.WebhookMessage{
-		Blocks: &slack.Blocks{BlockSet: blocks},
+		Text: fmt.Sprintf("```%s```", content),
 	})
 	if err != nil {
 		log.Printf("unknown error: %s", err.Error())
