@@ -1,12 +1,11 @@
-name: release
+name: build
 
 on:
   push:
-    tags:
-      - "v*"
+    branches: main
 
 jobs:
-  release:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -18,10 +17,18 @@ jobs:
         with:
           go-version-file: "go.mod"
 
-      - name: Run GoReleaser
+      - name: GoReleaser Check
         uses: goreleaser/goreleaser-action@v5
         with:
           version: latest
-          args: release --clean
+          args: chheck
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build GoReleaser
+        uses: goreleaser/goreleaser-action@v5
+        with:
+          version: latest
+          args: build --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
