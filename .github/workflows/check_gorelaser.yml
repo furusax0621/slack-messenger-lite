@@ -20,6 +20,6 @@ jobs:
         uses: goreleaser/goreleaser-action@v5
         with:
           version: latest
-          args: chheck
+          args: check
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
