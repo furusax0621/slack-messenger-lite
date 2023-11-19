@@ -1,14 +1,18 @@
 package main
 
 import (
+	"bytes"
 	"context"
-	"fmt"
+	"encoding/json"
 	"io"
 	"log"
+	"net/http"
 	"os"
-
-	"github.com/slack-go/slack"
 )
+
+type content struct {
+	Text string `json:"text"`
+}
 
 func main() {
 	ctx, cancel := context.WithCancel(context.Background())
@@ -20,24 +24,30 @@ func main() {
 		os.Exit(1)
 	}
 
-	content, err := getContent()
-	if err != nil {
-		log.Printf("unknown error: %s", err.Error())
-	}
-
-	err = slack.PostWebhookContext(ctx, url, &slack.WebhookMessage{
-		Text: fmt.Sprintf("```%s```", content),
-	})
-	if err != nil {
-		log.Printf("unknown error: %s", err.Error())
-	}
-}
-
-func getContent() (string, error) {
 	data, err := io.ReadAll(os.Stdin)
 	if err != nil {
-		return "", err
+		log.Printf("unknown error: %s", err.Error())
+		os.Exit(1)
 	}
 
-	return string(data), nil
+	body, err := json.Marshal(content{Text: string(data)})
+	if err != nil {
+		log.Printf("unknown error: %s", err.Error())
+		os.Exit(1)
+	}
+
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewReader(body))
+	if err != nil {
+		log.Printf("unknown error: %s", err.Error())
+		os.Exit(1)
+	}
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("unknown error: %s", err.Error())
+		os.Exit(1)
+	}
+	defer resp.Body.Close()
+
+	_, _ = io.Copy(io.Discard, req.Body)
 }
