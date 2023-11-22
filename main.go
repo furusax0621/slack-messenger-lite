@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -30,7 +31,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	body, err := json.Marshal(content{Text: string(data)})
+	body, err := json.Marshal(content{
+		Text: fmt.Sprintf("```%s```", string(data)),
+	})
 	if err != nil {
 		log.Printf("unknown error: %s", err.Error())
 		os.Exit(1)
