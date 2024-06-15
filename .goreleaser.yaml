@@ -1,5 +1,6 @@
 # This is an example .goreleaser.yml file with some sensible defaults.
 # Make sure to check the documentation at https://goreleaser.com
+version: 2
 project_name: sml
 before:
   hooks:
@@ -15,8 +16,7 @@ builds:
     main: ./main.go
     binary: sml
 archives:
-  - rlcp: true
-    format: tar.gz
+  - format: tar.gz
     format_overrides:
       - format: zip
         goos: windows
